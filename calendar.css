@@ -11,9 +11,6 @@ body,html{
 }
 
 .calendar_container{
-	margin-left: 17%;
-	width: 930px;
-	height: 680px;
 	color: #eee;
 }
 
@@ -50,9 +47,25 @@ body,html{
 }
 
 
+.month.selected .monthname_container :before{
+	content: " ";
+	display: block;
+	position: relative;
+	float: left;
+	width: 0px;
+	height: 0px;
+	clear: both;
+	margin-top: 10px;
+	margin-left: -40px;
+	border-top: 10px solid transparent;           
+	border-bottom: 10px solid transparent;
+	border-right: 10px solid #f55;
+}
 
-
-
+.month.selected .monthname_content {
+	padding-left: 50px;
+	font-size: 30px;
+}
 
 
 .month.hide{
@@ -107,6 +120,7 @@ body,html{
 	color: #f55;
 	font-family: "Quicksand";
 	font-weight: 400;
+	transition: 0.5s all ease;
 }
 
 .monthname_container{

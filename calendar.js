@@ -17,9 +17,9 @@ $.extend(Calendar.prototype, {
 	init: function(){
 		calendar = this;
 
-		$(".month").click(function(){
-			console.log("expand");
-			calendar.goToMonth($(this).attr("data-month"));
+		$(".monthname_container").click(function(){
+			calendar.goToMonth($(this).parent().attr("data-month"));
+
 		});
 
 		
@@ -29,6 +29,12 @@ $.extend(Calendar.prototype, {
 		year_calendar = $(this.calendar).children(".year_calendar");
 		year_calendar.children(".month"+month).addClass('selected');
 		year_calendar.children(".month:not(.selected)").addClass("hide");
+		$(".monthname_container").unbind();
+		$(".monthname_container").click(function(){
+			calendar.goBackToYear();
+
+		});
+
 
 	},
 
@@ -36,6 +42,11 @@ $.extend(Calendar.prototype, {
 		year_calendar = $(this.calendar).children(".year_calendar");
 		year_calendar.children(".month:not(.selected)").removeClass("hide");
 		year_calendar.children(".month.selected").removeClass('selected');
+		$(".monthname_container").unbind();
+		$(".monthname_container").click(function(){
+			calendar.goToMonth($(this).parent().attr("data-month"));
+
+		});
 	}
 
 
