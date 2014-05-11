@@ -1,0 +1,82 @@
+body,html{
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+.clearer{
+	clear: both;
+
+}
+
+.calendar_container{
+	margin-left: 17%;
+	color: #eee;
+}
+
+.year_calendar{
+	display: block;
+}
+
+.month{
+	position: relative;
+	float: left;
+	display: inline-block;
+	height: auto;
+	width: auto;
+	padding: 10px;
+	background-color: #222;
+	border: thin solid #333;
+}
+
+.day{
+	position: relative;
+	float: left;
+	width: 30px;
+	height: 30px;	
+	
+}
+
+.day_content{
+	padding: 5px;
+	text-align: center;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	border-radius: 20px;
+	transition: 0.2s all ease;
+}
+
+.day_content:hover{
+	background-color: white;
+	color: black;
+}
+
+.dayname{
+	position: relative;
+	float: left;
+	width: 30px;
+	height: 30px;	
+	color: #444;
+	
+}
+
+.dayname_content{
+	padding: 5px;
+}
+
+.monthname_content{
+	color: #f55;
+}
+
+.monthname_container{
+	padding-top: 5px;
+}
+
+.month_calendar{
+	display: none;
+}
+
+.day_calendar{
+	display: none;
+}
