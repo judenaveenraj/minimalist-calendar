@@ -77,6 +77,27 @@ body,html{
 	opacity: 0.0;
 }
 
+.month.selected .day.selected{
+	width: 900px;
+	height: 600px;
+}
+
+.month.selected .day.selected .day_content{
+	opacity: 0.0;
+}
+
+.month.selected .day.hide{
+	width: 0;
+	height: 0;
+	opacity: 0.0;
+}
+
+.month.selected .dayname.hide{
+	width: 0;
+	height: 0;
+	opacity: 0.0;
+}
+
 .day{
 	position: relative;
 	float: left;
