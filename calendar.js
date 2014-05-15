@@ -228,6 +228,13 @@ $.extend(Calendar.prototype, {
 });
 
 function CalendarMath() {
+	
+}
+
+
+
+
+$.extend(CalendarMath.prototype, {
 	firstDayOfYear: function(year){
 		var d = new Date("01/01/"+year);
 		var n = d.getDay();
@@ -249,13 +256,6 @@ function CalendarMath() {
 	    // Not a leap year. Feb has 28 days.
 	    return 28;		
 	}
-}
-
-
-
-
-$.extend(CalendarMath.prototype, {
-
 });
 
 
