@@ -13,7 +13,7 @@ function Calendar() {
     	DAY: 2
 	};
 	this.currentState = this.states.YEAR;
-
+	this.historyStates = [this.states.YEAR];
 	this.selectedMonth = undefined;
 	this.selectedDay = undefined;
 }
@@ -32,7 +32,10 @@ $.extend(Calendar.prototype, {
 
 
 	goToState: function(state, args){
-		console.log(this.currentState);
+		console.log("gotostate "+state)
+		if(this._peekHistoryState() != this.currentState)
+			this._pushHistoryState(this.currentState);
+
 		if(this.states[state] == undefined){
 			console.log("UNDEFINED STATE..."); 
 			return false;
@@ -78,7 +81,7 @@ $.extend(Calendar.prototype, {
 			this._goToYear();
 		}
 
-		console.log(this.currentState);
+		
 
 			
 
@@ -90,48 +93,68 @@ $.extend(Calendar.prototype, {
 
 
 	_initYear: function(){
+
 		var this_cal = this;
-
-		$(".monthname_container")
+		//Setup click handlers
+		$(".monthname_content")
 			.click(function(){
-
-				if( this_cal.selectedMonth == undefined ){
+				if((this_cal.currentState != this_cal.states.MONTH) && !($(this).parent().parent().hasClass("selected"))){
 					this_cal.goToState("MONTH", {
-										month: $(this).parent().attr("data-month"),
+										month: $(this).parent().parent().attr("data-month"),
 										year: this_cal.displayYear
 									});
 				}
-				else{
-					this_cal.goToState("YEAR", {
-										year: this_cal.displayYear
-									});
+				
+				
 					
-				}
 			});
 
 		$(".month .day")
 			.click(function(){
-				if( this_cal.selectedDay == undefined ){
-					this_cal.goToState("DAY", {
-									day: $(this).attr('data-day'),
-									month: $(this).parent().parent().attr('data-month'),
-									year: this_cal.displayYear
-								});	
-				}
-				else{
-					this_cal.goToState("MONTH", {
-									month: this_cal.displayMonth,
-									year: this_cal.displayYear
-								});	
-				}
 				
+				this_cal.goToState("DAY", {
+								day: $(this).attr('data-day'),
+								month: $(this).parent().parent().attr('data-month'),
+								year: this_cal.displayYear
+							});	
+		});
+
+		$(".back_button")
+			.click(function(){
+				console.log("adasd" + this_cal._peekHistoryState());
+				nextState = this_cal._popHistoryState();
+				if( nextState == this_cal.states.YEAR){
+					this_cal.goToState("YEAR", {
+										year: this_cal.displayYear
+									});
+					
+				} else if(nextState 	== this_cal.states.MONTH){
+					this_cal.goToState("MONTH", {
+										year: this_cal.displayYear,
+										month: this_cal.displayMonth
+									});
+					
+				}
 			});
+		
 	},
 
 	_goToYear: function(){
+		console.log("going to year");
 		//IF COMING FROM MONTH VIEW
 		if(this.currentState == this.states.MONTH){
 			year_calendar = this._getYearDiv();
+			year_calendar.children(".month:not(.selected)").removeClass("hide");
+			year_calendar.children(".month.selected").removeClass("selected");
+			this.selectedMonth = undefined;
+		}
+		if(this.currentState == this.states.DAY){
+			year_calendar = this._getYearDiv();
+			year_calendar.find(".extra_monthname_content").remove();
+
+			year_calendar.find(".month.selected .day"+this.displayDay).removeClass('selected');
+			year_calendar.find(".month.selected .day:not(.selected)").removeClass("hide");
+			year_calendar.find(".month.selected .dayname").removeClass("hide");
 			year_calendar.children(".month:not(.selected)").removeClass("hide");
 			year_calendar.children(".month.selected").removeClass("selected");
 			this.selectedMonth = undefined;
@@ -140,9 +163,9 @@ $.extend(Calendar.prototype, {
 	},
 
 	_goToMonth: function(){
+		console.log("going to month");
 		//IF COMING FROM YEAR VIEW
 		if(this.currentState == this.states.YEAR){
-			console.log("in current state year")
 			year_calendar = this._getYearDiv();
 			year_calendar.children(".month"+this.displayMonth).addClass('selected');
 			year_calendar.children(".month:not(.selected)").addClass("hide");
@@ -150,7 +173,7 @@ $.extend(Calendar.prototype, {
 		//IF COMING FROM DAY VIEW
 		else if(this.currentState == this.states.DAY){
 			console.log("From day to month")
-			year_calendar = this_cal._getYearDiv();
+			year_calendar = this._getYearDiv();
 			year_calendar.find(".extra_monthname_content").remove();
 			year_calendar.find(".month.selected .day"+this.displayDay).removeClass('selected');
 			year_calendar.find(".month.selected .day:not(.selected)").removeClass("hide");
@@ -158,13 +181,14 @@ $.extend(Calendar.prototype, {
 			
 			//year_calendar.children(".month:not(.selected) .day").removeClass("hide");
 			//year_calendar.children(".month.selected .day.selected").removeClass('selected');
-			this_cal.selectedDay = undefined;
+			this.selectedDay = undefined;
 		}
 		this.selectedMonth = this.displayMonth;
 		this.currentState = this.states.MONTH;
 	},
 
 	_goToDay: function(){
+		console.log("going to day");
 		//IF COMING FROM MONTH VIEW
 		console.log(this)
 		if(this.currentState == this.states.MONTH){
@@ -182,12 +206,26 @@ $.extend(Calendar.prototype, {
 			year_calendar.find(".month.selected .day"+this.displayDay).addClass('selected');
 			year_calendar.find(".month.selected .day:not(.selected)").addClass("hide");
 			year_calendar.find(".month.selected .dayname").addClass("hide");
-			year_calendar.find(".month.selected .monthname_content").append("<span id='extra_monthname_content'>"+this.displayDay+"</span>");
+			year_calendar.find(".month.selected .monthname_content").append("<span class='extra_monthname_content'>"+this.displayDay+"</span>");
 			this.selectedMonth = this.displayMonth;
 		}
 		this.selectedDay = this.displayDay;
 		this.currentState = this.states.DAY;
+	},
+
+	_popHistoryState: function(){
+		return this.historyStates.pop();
+	},
+
+	_peekHistoryState: function(){
+		return this.historyStates[this.historyStates.length-1];
+	},
+
+	_pushHistoryState:function(state){
+		this.historyStates.push(state);
 	}
+
+
 
 
 

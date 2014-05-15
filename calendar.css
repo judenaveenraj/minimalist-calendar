@@ -30,6 +30,12 @@ body,html{
 	transition: 0.5s all ease;
 }
 
+.month .back_button{
+	opacity: 0;
+	width: 0px;
+	height: 0px;
+}
+
 .month.selected{
 	width: 930px;
 	height: 680px;
@@ -46,20 +52,27 @@ body,html{
 	border: thin solid #333;
 }
 
+.month.selected .back_button{
+	opacity: 1;
+	width: 0px;
+	height: 0px;
+	margin-top: 10px;
+	margin-left: 20px;
+	border-top: 10px solid transparent;           
+	border-bottom: 10px solid transparent;
+	border-right: 10px solid #f55;
+}
 
-.month.selected .monthname_container :before{
-	content: " ";
-	display: block;
+
+
+.back_button{
 	position: relative;
+	display: block;
 	float: left;
 	width: 0px;
 	height: 0px;
 	clear: both;
-	margin-top: 10px;
-	margin-left: -40px;
-	border-top: 10px solid transparent;           
-	border-bottom: 10px solid transparent;
-	border-right: 10px solid #f55;
+	transition:0.5s all ease;
 }
 
 .month.selected .monthname_content {
