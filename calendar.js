@@ -30,36 +30,9 @@ $.extend(Calendar.prototype, {
 							})
 	},
 
-	
-	
-
-	/*_goBackToMonth: function(){
-		
-		
-		this.currentState = this.states.MONTH;
-
-		$(".day").unbind();
-		$(".day").click(function(){
-			calendar.goToDay($(this).attr("data-day"));
-
-		});
-	},
-
-/*	_goBackToYear: function(){
-		year_calendar = $(this.calendar).children(".year_calendar");
-		year_calendar.children(".month:not(.selected)").removeClass("hide");
-		year_calendar.children(".month.selected").removeClass('selected');
-
-		this.currentState = this.states.YEAR;
-
-		$(".monthname_container").unbind();
-		$(".monthname_container").click(function(){
-			calendar.goToMonth($(this).parent().attr("data-month"));
-
-		});
-	},*/
 
 	goToState: function(state, args){
+		console.log(this.currentState);
 		if(this.states[state] == undefined){
 			console.log("UNDEFINED STATE..."); 
 			return false;
@@ -76,12 +49,12 @@ $.extend(Calendar.prototype, {
 		if(state == "DAY"){
 			if(args.day == undefined || args.month == undefined || args.year == undefined){
 				console.log("NOT ENOUGH INFORMATION ON DAY");
+				console.log(args)
 				return false;
 			}
 			this.displayDay = args.day;
 			this.displayMonth = args.month;
 			this.displayYear = args.year;
-			this.currentState = this.states.DAY;
 			this._goToDay();
 			
 		} else if(state == "MONTH"){
@@ -91,7 +64,7 @@ $.extend(Calendar.prototype, {
 			}
 			this.displayMonth = args.month;
 			this.displayYear = args.year;
-			this.currentState = this.states.MONTH;
+			
 			this._goToMonth();
 
 		} else if(state == "YEAR"){
@@ -101,9 +74,11 @@ $.extend(Calendar.prototype, {
 			}
 
 			this.displayYear = args.year;
-			this.currentState = this.states.YEAR;
+			
 			this._goToYear();
 		}
+
+		console.log(this.currentState);
 
 			
 
@@ -115,71 +90,104 @@ $.extend(Calendar.prototype, {
 
 
 	_initYear: function(){
-		console.log("asdasdad")
 		var this_cal = this;
 
 		$(".monthname_container")
 			.click(function(){
 
-				if( this_cal.selectedMonth != undefined ){
-					year_calendar = this_cal._getYearDiv();
-					year_calendar.children(".month:not(.selected)").removeClass("hide");
-					year_calendar.children(".month.selected").removeClass("selected");
-					this_cal.selectedMonth = undefined;
-				}
-				else{
+				if( this_cal.selectedMonth == undefined ){
 					this_cal.goToState("MONTH", {
 										month: $(this).parent().attr("data-month"),
 										year: this_cal.displayYear
 									});
 				}
+				else{
+					this_cal.goToState("YEAR", {
+										year: this_cal.displayYear
+									});
+					
+				}
 			});
 
 		$(".month .day")
 			.click(function(){
-				if( this_cal.selectedDay != undefined ){
-					year_calendar = this_cal._getYearDiv();
-					year_calendar.children(".month:not(.selected) .day").removeClass("hide");
-					year_calendar.children(".month.selected .day.selected").removeClass('selected');
-					this_cal.selectedDay = undefined;
-				}
-				this_cal.goToState("DAY", {
+				if( this_cal.selectedDay == undefined ){
+					this_cal.goToState("DAY", {
 									day: $(this).attr('data-day'),
 									month: $(this).parent().parent().attr('data-month'),
 									year: this_cal.displayYear
-								});
+								});	
+				}
+				else{
+					this_cal.goToState("MONTH", {
+									month: this_cal.displayMonth,
+									year: this_cal.displayYear
+								});	
+				}
+				
 			});
 	},
 
 	_goToYear: function(){
-
+		//IF COMING FROM MONTH VIEW
+		if(this.currentState == this.states.MONTH){
+			year_calendar = this._getYearDiv();
+			year_calendar.children(".month:not(.selected)").removeClass("hide");
+			year_calendar.children(".month.selected").removeClass("selected");
+			this.selectedMonth = undefined;
+		}
+		this.currentState = this.states.YEAR;
 	},
 
 	_goToMonth: function(){
-		year_calendar = this._getYearDiv();
-		year_calendar
-			.children(".month"+this.displayMonth)
-			.addClass('selected');
-		year_calendar
-			.children(".month:not(.selected)")
-			.addClass("hide");
+		//IF COMING FROM YEAR VIEW
+		if(this.currentState == this.states.YEAR){
+			console.log("in current state year")
+			year_calendar = this._getYearDiv();
+			year_calendar.children(".month"+this.displayMonth).addClass('selected');
+			year_calendar.children(".month:not(.selected)").addClass("hide");
+		}
+		//IF COMING FROM DAY VIEW
+		else if(this.currentState == this.states.DAY){
+			console.log("From day to month")
+			year_calendar = this_cal._getYearDiv();
+			year_calendar.find(".extra_monthname_content").remove();
+			year_calendar.find(".month.selected .day"+this.displayDay).removeClass('selected');
+			year_calendar.find(".month.selected .day:not(.selected)").removeClass("hide");
+			year_calendar.find(".month.selected .dayname").removeClass("hide");
+			
+			//year_calendar.children(".month:not(.selected) .day").removeClass("hide");
+			//year_calendar.children(".month.selected .day.selected").removeClass('selected');
+			this_cal.selectedDay = undefined;
+		}
 		this.selectedMonth = this.displayMonth;
-
+		this.currentState = this.states.MONTH;
 	},
 
 	_goToDay: function(){
-		console.log("asdassdadasda")
-		
-		year_calendar = this._getYearDiv();
-		year_calendar.find(".month.selected .day"+this.displayDay).addClass('selected');
-		year_calendar.find(".month.selected .day:not(.selected)").addClass("hide");
-		year_calendar.find(".month.selected .dayname").addClass("hide");
-
-		year_calendar.find(".month.selected .monthname_content").append("<span id='extra_monthname_content'>"+this.displayDay+"</span>");
-
+		//IF COMING FROM MONTH VIEW
+		console.log(this)
+		if(this.currentState == this.states.MONTH){
+			year_calendar = this._getYearDiv();
+			year_calendar.find(".month.selected .day"+this.displayDay).addClass('selected');
+			year_calendar.find(".month.selected .day:not(.selected)").addClass("hide");
+			year_calendar.find(".month.selected .dayname").addClass("hide");
+			year_calendar.find(".month.selected .monthname_content").append("<span class='extra_monthname_content'>"+this.displayDay+"</span>");
+		}
+		//IF COMING FROM YEAR VIEW
+		else if(this.currentState == this.states.YEAR){
+			year_calendar = this._getYearDiv();
+			year_calendar.children(".month"+this.displayMonth).addClass('selected');
+			year_calendar.children(".month:not(.selected)").addClass("hide");
+			year_calendar.find(".month.selected .day"+this.displayDay).addClass('selected');
+			year_calendar.find(".month.selected .day:not(.selected)").addClass("hide");
+			year_calendar.find(".month.selected .dayname").addClass("hide");
+			year_calendar.find(".month.selected .monthname_content").append("<span id='extra_monthname_content'>"+this.displayDay+"</span>");
+			this.selectedMonth = this.displayMonth;
+		}
 		this.selectedDay = this.displayDay;
-
-	},
+		this.currentState = this.states.DAY;
+	}
 
 
 
